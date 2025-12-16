@@ -6,6 +6,7 @@ An end-to-end Big Data pipeline built on Databricks that processes historical RB
 **Project Overview**
 This project demonstrates a scalable Medallion Architecture (Bronze/Silver/Gold) for time-series forecasting. We ingested 65 separate data sources, transformed them using Apache Spark, and utilized Prophet to predict cash requirements for the next 90 days, accounting for regional holidays in Tamil Nadu.
 
+
 **Technical Architecture**
 The project follows the Big Data methodology of separating storage and compute:
 
@@ -16,6 +17,8 @@ Transformation (Silver Zone): A Spark job cleans and standardizes 65 individual 
 Data Warehouse (Gold Zone): Final aggregated and typed data is saved into an Apache Hive managed table (atm_forecast_gold).
 
 Analytics & Visualization: The Prophet model reads from Hive to generate forecasts, components, and a calendar heatmap.
+
+
 
 **Tech Stack**
 Platform: Databricks
@@ -29,6 +32,8 @@ Warehouse: Apache Hive
 Forecasting: Meta Prophet
 
 Environment: Jupyter-style Notebooks
+
+
 
 **Key Results**
 Trend Analysis: Identified long-term growth patterns and stabilization points in cash demand.
