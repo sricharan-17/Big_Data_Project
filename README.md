@@ -3,10 +3,10 @@
 ATM Cash Demand Forecasting Pipeline
 An end-to-end Big Data pipeline built on Databricks that processes historical RBI cash withdrawal data to forecast future demand using the Prophet model.
 
-Project Overview
+**Project Overview**
 This project demonstrates a scalable Medallion Architecture (Bronze/Silver/Gold) for time-series forecasting. We ingested 65 separate data sources, transformed them using Apache Spark, and utilized Prophet to predict cash requirements for the next 90 days, accounting for regional holidays in Tamil Nadu.
 
-Technical Architecture
+**Technical Architecture**
 The project follows the Big Data methodology of separating storage and compute:
 
 Ingestion (Bronze Zone): Raw Excel data (.xlsx) stored in Databricks Unity Catalog Volumes.
@@ -17,7 +17,7 @@ Data Warehouse (Gold Zone): Final aggregated and typed data is saved into an Apa
 
 Analytics & Visualization: The Prophet model reads from Hive to generate forecasts, components, and a calendar heatmap.
 
-Tech Stack
+**Tech Stack**
 Platform: Databricks
 
 Engine: Apache Spark (PySpark)
@@ -30,7 +30,7 @@ Forecasting: Meta Prophet
 
 Environment: Jupyter-style Notebooks
 
-Key Results
+**Key Results**
 Trend Analysis: Identified long-term growth patterns and stabilization points in cash demand.
 
 Seasonality: Captured weekly peaks (Mondays) and yearly cycles (March and Oct/Nov peaks).
