@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Curriculum Module Workflow</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f3f4f6;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+        svg {
+            background-color: #ffffff;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            overflow: visible;
+        }
+        .flow-node {
+            transition: transform 0.2s ease-in-out;
+            cursor: pointer;
+        }
+        .flow-node:hover {
+            transform: scale(1.05);
+        }
+        .flow-text {
+            font-size: 10px;
+            font-weight: 500;
+        }
+        .flow-emoji {
+            font-size: 2rem;
+            line-height: 1;
+        }
+    </style>
+</head>
+<body class="bg-gray-100 flex items-center justify-center p-4">
+
+    <div class="bg-white rounded-xl shadow-lg p-6 max-w-4xl w-full">
+        <h1 class="text-2xl font-bold text-gray-800 mb-6 text-center">Curriculum Module Workflow</h1>
+        
+        <svg id="flowchart" viewBox="0 0 800 1200" xmlns="http://www.w3.org/2000/svg" class="w-full h-auto">
+            <defs>
+                <marker id="arrowhead" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                    <path d="M 0 0 L 10 5 L 0 10 z" fill="#4b5563" />
+                </marker>
+            </defs>
+
+            <!-- Define colors for each module -->
+            <rect id="frontend-color" x="0" y="0" width="0" height="0" fill="#a5b4fc" />
+            <rect id="backend-color" x="0" y="0" width="0" height="0" fill="#60a5fa" />
+            <rect id="ai-ml-color" x="0" y="0" width="0" height="0" fill="#34d399" />
+            <rect id="blockchain-color" x="0" y="0" width="0" height="0" fill="#818cf8" />
+            <rect id="database-color" x="0" y="0" width="0" height="0" fill="#facc15" />
+
+            <!-- Utility function to draw nodes and text -->
+            <script>
+                function drawRectNode(svg, x, y, width, height, text, color, id, emoji) {
+                    const rect = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+                    rect.setAttribute('x', x);
+                    rect.setAttribute('y', y);
+                    rect.setAttribute('width', width);
+                    rect.setAttribute('height', height);
+                    rect.setAttribute('rx', 10);
+                    rect.setAttribute('ry', 10);
+                    rect.setAttribute('fill', color);
+                    rect.setAttribute('stroke', '#4b5563');
+                    rect.setAttribute('stroke-width', 2);
+                    rect.setAttribute('class', 'flow-node');
+                    if (id) rect.setAttribute('id', id);
+                    svg.appendChild(rect);
+
+                    const emojiElement = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+                    emojiElement.setAttribute('x', x + width / 2);
+                    emojiElement.setAttribute('y', y + height * 0.35);
+                    emojiElement.setAttribute('text-anchor', 'middle');
+                    emojiElement.setAttribute('dominant-baseline', 'middle');
+                    emojiElement.setAttribute('class', 'flow-emoji');
+                    emojiElement.textContent = emoji;
+                    svg.appendChild(emojiElement);
+
+                    const lines = text.split('\n');
+                    let lineHeight = 16;
+                    let textY = y + (height * 0.6) - ((lines.length - 1) * lineHeight / 2);
+                    for (let line of lines) {
+                        const textElement = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+                        textElement.setAttribute('x', x + width / 2);
+                        textElement.setAttribute('y', textY);
+                        textElement.setAttribute('text-anchor', 'middle');
+                        textElement.setAttribute('dominant-baseline', 'middle');
+                        textElement.setAttribute('fill', '#1f2937');
+                        textElement.setAttribute('class', 'flow-text');
+                        textElement.textContent = line.trim();
+                        svg.appendChild(textElement);
+                        textY += lineHeight;
+                    }
+                }
+
+                function drawDiamondNode(svg, x, y, width, height, text, color, id) {
+                    const points = `${x + width/2},${y} ${x + width},${y + height/2} ${x + width/2},${y + height} ${x},${y + height/2}`;
+                    const poly = document.createElementNS('http://www.w3.org/2000/svg', 'polygon');
+                    poly.setAttribute('points', points);
+                    poly.setAttribute('fill', color);
+                    poly.setAttribute('stroke', '#4b5563');
+                    poly.setAttribute('stroke-width', 2);
+                    poly.setAttribute('class', 'flow-node');
+                    if (id) poly.setAttribute('id', id);
+                    svg.appendChild(poly);
+
+                    const textElement = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+                    textElement.setAttribute('x', x + width / 2);
+                    textElement.setAttribute('y', y + height / 2);
+                    textElement.setAttribute('text-anchor', 'middle');
+                    textElement.setAttribute('dominant-baseline', 'middle');
+                    textElement.setAttribute('fill', '#1f2937');
+                    textElement.setAttribute('class', 'flow-text');
+                    textElement.textContent = text;
+                    svg.appendChild(textElement);
+                }
+
+                function drawArrow(svg, x1, y1, x2, y2, label = '') {
+                    const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+                    let d;
+                    const controlY = y1 + (y2 - y1) / 2;
+                    d = `M${x1},${y1} V${controlY} H${x2} V${y2}`;
+                    path.setAttribute('d', d);
+                    path.setAttribute('stroke', '#4b5563');
+                    path.setAttribute('stroke-width', 2);
+                    path.setAttribute('fill', 'none');
+                    path.setAttribute('marker-end', 'url(#arrowhead)');
+                    svg.appendChild(path);
+
+                    if (label) {
+                        const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+                        text.setAttribute('x', (x1 + x2) / 2);
+                        text.setAttribute('y', controlY + 5);
+                        text.setAttribute('text-anchor', 'middle');
+                        text.setAttribute('fill', '#4b5563');
+                        text.setAttribute('class', 'flow-text');
+                        text.textContent = label;
+                        svg.appendChild(text);
+                    }
+                }
+            </script>
+
+            <!-- Draw the workflow elements -->
+            <g id="flowchart-content">
+                <!-- Nodes -->
+                <script>
+                    const svg = document.getElementById('flowchart-content');
+                    const nodeWidth = 200;
+                    const nodeHeight = 80;
+                    const vSpacing = 120;
+                    const hSpacing = 150;
+                    const startY = 50;
+
+                    // 1. User Login/Registration
+                    drawRectNode(svg, 300, startY, nodeWidth, nodeHeight, "User Login/Registration\n(Frontend)", document.getElementById('frontend-color').getAttribute('fill'), null, "🚪");
+                    drawArrow(svg, 400, startY + nodeHeight, 400, startY + vSpacing);
+
+                    // 2. Student details & Authentication
+                    drawRectNode(svg, 300, startY + vSpacing, nodeWidth, nodeHeight, "Student Details & Authentication\n(Frontend/Backend)", document.getElementById('backend-color').getAttribute('fill'), null, "👤");
+                    drawArrow(svg, 400, startY + vSpacing + nodeHeight, 400, startY + 2 * vSpacing);
+
+                    // 3. Learning Style Test
+                    drawRectNode(svg, 300, startY + 2 * vSpacing, nodeWidth, nodeHeight, "Learning Style Test\n(AI/ML)", document.getElementById('ai-ml-color').getAttribute('fill'), null, "🧠");
+                    drawArrow(svg, 400, startY + 2 * vSpacing + nodeHeight, 400, startY + 3 * vSpacing);
+
+                    // 4. Dashboard Access
+                    drawRectNode(svg, 300, startY + 3 * vSpacing, nodeWidth, nodeHeight, "Dashboard Access\n(Frontend/Database)", document.getElementById('frontend-color').getAttribute('fill'), null, "📊");
+                    drawArrow(svg, 400, startY + 3 * vSpacing + nodeHeight, 400, startY + 4 * vSpacing);
+
+                    // 5. Learning Module
+                    drawRectNode(svg, 300, startY + 4 * vSpacing, nodeWidth, nodeHeight, "Learning Module\n(AI/ML)", document.getElementById('ai-ml-color').getAttribute('fill'), null, "📚");
+                    drawArrow(svg, 400, startY + 4 * vSpacing + nodeHeight, 400, startY + 5 * vSpacing);
+
+                    // 6. Quiz/Assessment
+                    drawRectNode(svg, 300, startY + 5 * vSpacing, nodeWidth, nodeHeight, "Quiz / Assessment\n(AI/ML)", document.getElementById('ai-ml-color').getAttribute('fill'), null, "📝");
+                    drawArrow(svg, 400, startY + 5 * vSpacing + nodeHeight, 400, startY + 6 * vSpacing);
+
+                    // 7. Result Handling (Decision)
+                    drawDiamondNode(svg, 300, startY + 6 * vSpacing, nodeWidth, nodeHeight, "Passed?", document.getElementById('backend-color').getAttribute('fill'));
+                    
+                    // 7.1. Path for Pass (Right)
+                    const passX = 300 + nodeWidth + hSpacing;
+                    const passY = startY + 6 * vSpacing + nodeHeight/2;
+                    const passNodeY = startY + 6 * vSpacing - nodeHeight/2;
+                    drawArrow(svg, 300 + nodeWidth, startY + 6 * vSpacing + nodeHeight/2, passX, passY);
+                    
+                    drawRectNode(svg, passX, passNodeY, nodeWidth, nodeHeight*1.5, "Record Stored (Database)\nBlockchain Update\nCertificate Issued", document.getElementById('blockchain-color').getAttribute('fill'), null, "✅");
+                    
+                    // 7.2. Path for Fail (Left)
+                    const failX = 300 - hSpacing - nodeWidth;
+                    const failY = startY + 6 * vSpacing + nodeHeight/2;
+                    const failNodeY = startY + 6 * vSpacing - nodeHeight/2;
+                    drawArrow(svg, 300, startY + 6 * vSpacing + nodeHeight/2, failX, failY);
+                    drawRectNode(svg, failX, failNodeY, nodeWidth, nodeHeight, "Redirect to\nCourse Module", document.getElementById('ai-ml-color').getAttribute('fill'), null, "🔄");
+                    
+                    // The retry path
+                    const retryX1 = failX + nodeWidth / 2;
+                    const retryY1 = failY + nodeHeight / 2;
+                    const retryX2 = 400;
+                    const retryY2 = startY + 4 * vSpacing + nodeHeight;
+                    
+                    const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+                    const d = `M${retryX1},${retryY1} L${retryX1},${retryY2} L${retryX2},${retryY2}`;
+                    path.setAttribute('d', d);
+                    path.setAttribute('stroke', '#4b5563');
+                    path.setAttribute('stroke-width', 2);
+                    path.setAttribute('fill', 'none');
+                    path.setAttribute('marker-end', 'url(#arrowhead)');
+                    svg.appendChild(path);
+
+                    const retryText = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+                    retryText.setAttribute('x', retryX1);
+                    retryText.setAttribute('y', (retryY1 + retryY2) / 2);
+                    retryText.setAttribute('text-anchor', 'middle');
+                    retryText.setAttribute('fill', '#4b5563');
+                    retryText.setAttribute('class', 'flow-text');
+                    retryText.textContent = "Retry";
+                    svg.appendChild(retryText);
+
+                    // 8. Progress Tracking
+                    drawArrow(svg, 400, startY + 6 * vSpacing + nodeHeight, 400, startY + 7 * vSpacing);
+                    drawRectNode(svg, 300, startY + 7 * vSpacing, nodeWidth, nodeHeight, "Progress Tracking\n(Database/Frontend)", document.getElementById('database-color').getAttribute('fill'), null, "📈");
+                    drawArrow(svg, 400, startY + 7 * vSpacing + nodeHeight, 400, startY + 8 * vSpacing);
+
+                    // 9. End
+                    drawRectNode(svg, 300, startY + 8 * vSpacing, nodeWidth, nodeHeight, "End of Flow", '#d1d5db', null, "🏁");
+                    
+                    // Connect the success path to progress tracking
+                    drawArrow(svg, passX + nodeWidth / 2, passNodeY + nodeHeight * 1.5, 400, startY + 7 * vSpacing);
+                </script>
+            </g>
+        </svg>
+
+        <!-- Legend for the flowchart -->
+        <div class="mt-8">
+            <h2 class="text-xl font-semibold mb-2 text-gray-700">Legend</h2>
+            <div class="flex flex-wrap gap-4 text-sm">
+                <div class="flex items-center gap-2">
+                    <div class="w-4 h-4 rounded-md" style="background-color: #a5b4fc;"></div>
+                    <span>Frontend</span>
+                </div>
+                <div class="flex items-center gap-2">
+                    <div class="w-4 h-4 rounded-md" style="background-color: #60a5fa;"></div>
+                    <span>Backend</span>
+                </div>
+                <div class="flex items-center gap-2">
+                    <div class="w-4 h-4 rounded-md" style="background-color: #34d399;"></div>
+                    <span>AI/ML</span>
+                </div>
+                <div class="flex items-center gap-2">
+                    <div class="w-4 h-4 rounded-md" style="background-color: #818cf8;"></div>
+                    <span>Blockchain</span>
+                </div>
+                <div class="flex items-center gap-2">
+                    <div class="w-4 h-4 rounded-md" style="background-color: #facc15;"></div>
+                    <span>Database</span>
+                </div>
+                <div class="flex items-center gap-2">
+                    <div class="w-4 h-4 rounded-md bg-gray-300"></div>
+                    <span>Decision</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
